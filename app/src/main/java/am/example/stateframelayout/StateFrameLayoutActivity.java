@@ -3,22 +3,22 @@ package am.example.stateframelayout;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.MaterialLoadingProgressDrawable;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import am.widget.MaterialProgressCircleImageView;
+import am.drawable.MaterialProgressDrawable;
+import am.widget.MaterialProgressImageView;
 import am.widget.stateframelayout.StateFrameLayout;
 
 public class StateFrameLayoutActivity extends BaseActivity
         implements RadioGroup.OnCheckedChangeListener, StateFrameLayout.OnAllStateClickListener {
 
     private StateFrameLayout lytState;
-    private MaterialLoadingProgressDrawable mLoadingDrawable;
-    private MaterialProgressCircleImageView mLoadingView;
+    private MaterialProgressDrawable mLoadingDrawable;
+    private MaterialProgressImageView mLoadingView;
     private Drawable mErrorDrawable;
     private View mErrorView;
     private Drawable mEmptyDrawable;
@@ -37,8 +37,11 @@ public class StateFrameLayoutActivity extends BaseActivity
         lytState = (StateFrameLayout) findViewById(R.id.sfl_lyt_state);
         RadioGroup rgpState = (RadioGroup) findViewById(R.id.sfl_rgp_state);
         RadioGroup rgpMode = (RadioGroup) findViewById(R.id.sfl_rgp_mode);
-        mLoadingDrawable = new MaterialLoadingProgressDrawable(lytState);
-        mLoadingView = new MaterialProgressCircleImageView(getApplicationContext());
+        mLoadingDrawable = new MaterialProgressDrawable(
+                getResources().getDisplayMetrics().density, MaterialProgressDrawable.LARGE,
+                0x00000000, 255, 0xff33b5e5, 0xff99cc00, 0xffff4444, 0xffffbb33);
+        mLoadingView = new MaterialProgressImageView(getApplicationContext());
+        mLoadingView.setColorSchemeColors(0xff33b5e5, 0xff99cc00, 0xffff4444, 0xffffbb33);
         mErrorDrawable = ContextCompat.getDrawable(this, R.drawable.ic_stateframelayout_error);
         TextView tvError = new TextView(getApplicationContext());
         tvError.setText(R.string.stateframelayout_change_state_error);
