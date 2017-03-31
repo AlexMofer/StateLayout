@@ -7,6 +7,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
@@ -71,17 +72,17 @@ public class StateLinearLayout extends LinearLayout {
         setWillNotDraw(false);
         setClickable(true);
         Drawable loading, error, empty;
-        TypedArray custom = context.obtainStyledAttributes(attrs, R.styleable.StateLayout);
+        TypedArray custom = context.obtainStyledAttributes(attrs, R.styleable.StateLinearLayout);
         boolean alwaysDrawChild = custom.getBoolean(
-                R.styleable.StateLayout_sflAlwaysDrawChild, false);
-        loading = custom.getDrawable(R.styleable.StateLayout_sflLoadingDrawable);
-        error = custom.getDrawable(R.styleable.StateLayout_sflErrorDrawable);
-        empty = custom.getDrawable(R.styleable.StateLayout_sflEmptyDrawable);
-        int state = custom.getInt(R.styleable.StateLayout_sflState, STATE_NORMAL);
-        mLoadingLayoutId = custom.getResourceId(R.styleable.StateLayout_sflLoadingLayout,
+                R.styleable.StateLinearLayout_sllAlwaysDrawChild, false);
+        loading = custom.getDrawable(R.styleable.StateLinearLayout_sllLoadingDrawable);
+        error = custom.getDrawable(R.styleable.StateLinearLayout_sllErrorDrawable);
+        empty = custom.getDrawable(R.styleable.StateLinearLayout_sllEmptyDrawable);
+        int state = custom.getInt(R.styleable.StateLinearLayout_sllState, STATE_NORMAL);
+        mLoadingLayoutId = custom.getResourceId(R.styleable.StateLinearLayout_sllLoadingLayout,
                 NO_ID);
-        mErrorLayoutId = custom.getResourceId(R.styleable.StateLayout_sflErrorLayout, NO_ID);
-        mEmptyLayoutId = custom.getResourceId(R.styleable.StateLayout_sflEmptyLayout, NO_ID);
+        mErrorLayoutId = custom.getResourceId(R.styleable.StateLinearLayout_sllErrorLayout, NO_ID);
+        mEmptyLayoutId = custom.getResourceId(R.styleable.StateLinearLayout_sllEmptyLayout, NO_ID);
         custom.recycle();
         setAlwaysDrawChild(alwaysDrawChild);
         setStateDrawables(loading, error, empty);
@@ -111,11 +112,14 @@ public class StateLinearLayout extends LinearLayout {
 
     @Override
     protected LayoutParams generateLayoutParams(ViewGroup.LayoutParams lp) {
-        if (lp instanceof LayoutParams) {
-            return new LayoutParams((LayoutParams) lp);
-        } else if (lp instanceof LinearLayout.LayoutParams) {
-            return new LayoutParams((LinearLayout.LayoutParams) lp);
-        } else if (lp instanceof MarginLayoutParams) {
+        if (Build.VERSION.SDK_INT >= 19) {
+            if (lp instanceof LayoutParams) {
+                return new LayoutParams((LayoutParams) lp);
+            } else if (lp instanceof LinearLayout.LayoutParams) {
+                return new LayoutParams((LinearLayout.LayoutParams) lp);
+            }
+        }
+        if (lp instanceof MarginLayoutParams) {
             return new LayoutParams((MarginLayoutParams) lp);
         } else {
             return new LayoutParams(lp);
@@ -860,7 +864,7 @@ public class StateLinearLayout extends LinearLayout {
         super.onRestoreInstanceState(ss.getSuperState());
     }
 
-    static class SavedState extends BaseSavedState {
+    private static class SavedState extends BaseSavedState {
         private int mState = STATE_NORMAL;
         private boolean mAlwaysDrawChild = false;
 
@@ -917,7 +921,6 @@ public class StateLinearLayout extends LinearLayout {
     /**
      * Per-child layout information associated with WrapLayout.
      */
-    @SuppressWarnings("all")
     public static class LayoutParams extends LinearLayout.LayoutParams {
 
         private int mState = STATE_NORMAL;
@@ -925,8 +928,8 @@ public class StateLinearLayout extends LinearLayout {
         public LayoutParams(Context c, AttributeSet attrs) {
             super(c, attrs);
             int state = STATE_NORMAL;
-            TypedArray custom = c.obtainStyledAttributes(attrs, R.styleable.StateLayout_Layout);
-            state = custom.getInt(R.styleable.StateLayout_Layout_sflLayout_state, state);
+            TypedArray custom = c.obtainStyledAttributes(attrs, R.styleable.StateLinearLayout_Layout);
+            state = custom.getInt(R.styleable.StateLinearLayout_Layout_sllLayout_state, state);
             custom.recycle();
             mState = state;
         }
@@ -952,10 +955,12 @@ public class StateLinearLayout extends LinearLayout {
             super(source);
         }
 
+        @TargetApi(19)
         public LayoutParams(LinearLayout.LayoutParams source) {
             super(source);
         }
 
+        @TargetApi(19)
         public LayoutParams(LayoutParams source) {
             super(source);
             mState = source.mState;
