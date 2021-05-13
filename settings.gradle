@@ -1,1 +1,3 @@
-include ':app', ':stateframelayout'
+rootProject.name = "StateLayout"
+include ':app'
+include ':statelayout'
